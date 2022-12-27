@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[1]:
+
+
 import numpy as np
 import scipy as sp
 from astropy import constants as c
@@ -23,7 +29,7 @@ U=(np.append(np.array(U),np.array([u.second,u.kilogram,u.ampere,u.meter,u.Kelvin
 L=np.array(np.where(np.array(U) == 'm')).shape    
 
 # Get the number of inputs from the user
-num_inputs = int(input("How many inputs do you need (up to 7)? "))
+num_inputs = int(input("How many quantities govern your system? (up to 7)"))
 
 # Initialize an empty array to store the sympy symbols and astropy units
 symbols_and_units = []
@@ -31,7 +37,7 @@ symbols_and_units = []
 # Loop up to the number of inputs to get the inputs
 for i in range(num_inputs):
   # Get the sympy symbol from the user
-  symbol = (input("Enter a sympy symbol: "))
+  symbol = (input("Enter a symbol: "))
 
   # Get the astropy unit from the user
   unit = u.Unit(input("Enter an astropy unit: "))
@@ -42,39 +48,90 @@ for i in range(num_inputs):
 # Print the array of symbols and units
 print(symbols_and_units)
 
+# Get the total units from the user
+#total_units = u.Unit(input("Enter the desired final units: "))
 
+# Get the total units from the user
+total_units_str = input("Enter the desired final units: ")
+
+# Replace ^ with ** in the string
+total_units_str = total_units_str.replace("^", "**")
+
+# Convert the string to an astropy Unit object
+total_units = u.Unit(total_units_str)
+
+# Decompose the total units into base units
+base_units = total_units.decompose()
+
+num_lengths = 0
+num_times = 0
+num_masses = 0
+num_currents = 0
+num_temperatures = 0
+num_luminous_intensities = 0
+num_mols = 0
+
+# Get the base units and the corresponding powers
+bases = base_units.bases
+powers = base_units.powers
+
+# Loop through the base units and powers to get the number of lengths, times, masses, etc
+for base, power in zip(bases, powers):
+  if base == u.meter:
+    num_lengths = power
+  elif base == u.second:
+    num_times = power
+  elif base == u.kilogram:
+    num_masses = power
+  elif base == u.ampere:
+    num_currents = power
+  elif base == u.Kelvin:
+    num_temperatures = power
+  elif base == u.candela:
+    num_luminous_intensities = power
+  elif base == u.mole:
+    num_mols = power
+
+# Print the number of lengths, times, masses, etc
+print("Number of lengths: ", num_lengths)
+print("Number of times: ", num_times)
+print("Number of masses: ", num_masses)
+print("Number of currents: ", num_currents)
+print("Number of temperatures: ", num_temperatures)
+print("Number of luminous intensities: ", num_luminous_intensities)
+print("Number of mols: ", num_mols)
 
 # Initialize a list to store the inputs
 x = [0] * 7
 
 # Loop 7 times to get the inputs
-for i in range(7):
+#for i in range(7):
   # Ask the user different questions for each iteration of the loop
-  if i == 0:
-    x[i] = float(input("How many lengths? "))
-  elif i == 1:
-    x[i] = float(input("How many times? "))
-  elif i == 2:
-    x[i] = float(input("How many masses? "))
-  elif i == 3:
-    x[i] = float(input("How many currents? "))
-  elif i == 4:
-    x[i] = float(input("How many temperatures? "))
-  elif i == 5:
-    x[i] = float(input("How many mols? "))
-  else:
-    x[i] = float(input("How many luminous intensities? "))
+  #if i == 0:
+   # x[i] = float(input("How many lengths? "))
+  #elif i == 1:
+   # x[i] = float(input("How many times? "))
+  #elif i == 2:
+   # x[i] = float(input("How many masses? "))
+  #elif i == 3:
+   # x[i] = float(input("How many currents? "))
+  #elif i == 4:
+   # x[i] = float(input("How many temperatures? "))
+  #elif i == 5:
+   # x[i] = float(input("How many mols? "))
+  #else:
+   # x[i] = float(input("How many luminous intensities? "))
 
 # Print the inputted numbers
-print(f"lengths = {x[0]}, times = {x[1]}, masses = {x[2]}, currents = {x[3]}, temperatures = {x[4]}, mols = {x[5]}, luminous intensities = {x[6]}")
+#print(f"lengths = {x[0]}, times = {x[1]}, masses = {x[2]}, currents = {x[3]}, temperatures = {x[4]}, mols = {x[5]}, luminous intensities = {x[6]}")
 
-ps = x[1]
-pkg = x[2]
-pA = x[3]
-pm = x[0]
-pK = x[4]
-pcd = x[5]
-pmol = x[6]
+ps = num_times
+pkg = num_masses
+pA = num_currents
+pm = num_lengths
+pK = num_temperatures
+pcd = num_luminous_intensities
+pmol = num_mols
 
 #Symbolic Solver:
 if num_inputs==1:
@@ -568,7 +625,7 @@ else:
 
 
 
-m.options.MAX_ITER=1000
+m.options.MAX_ITER=10000
 m.options.IMODE=2
    
 
@@ -576,12 +633,12 @@ m.solve(disp=False)
 
 
 if c6==[0,0,0,0,0,0,0]:
-    x0.value[0]=np.round(x0.value[0], 10)
-    x1.value[0]=np.round(x1.value[0], 10)
-    x2.value[0]=np.round(x2.value[0], 10)
-    x3.value[0]=np.round(x3.value[0], 10)
-    x4.value[0]=np.round(x4.value[0], 10)
-    x5.value[0]=np.round(x5.value[0], 10)
+    x0.value[0]=np.round(x0.value[0], 6)
+    x1.value[0]=np.round(x1.value[0], 6)
+    x2.value[0]=np.round(x2.value[0], 6)
+    x3.value[0]=np.round(x3.value[0], 6)
+    x4.value[0]=np.round(x4.value[0], 6)
+    x5.value[0]=np.round(x5.value[0], 6)
     # x(0)==x0.value[0]
     # x(1)==x1.value[0]
     # x(2)==x2.value[0]
@@ -590,11 +647,11 @@ if c6==[0,0,0,0,0,0,0]:
     # x(5)==x5.value[0]
     scale = (quantity0**x0.value[0]*quantity1**x1.value[0]*quantity2**x2.value[0]*quantity3**x3.value[0]*quantity4**x4.value[0]*quantity5**x5.value[0]*quantity6)
     if c5==[0,0,0,0,0,0,0]:
-        x0.value[0]=np.round(x0.value[0], 10)
-        x1.value[0]=np.round(x1.value[0], 10)
-        x2.value[0]=np.round(x2.value[0], 10)
-        x3.value[0]=np.round(x3.value[0], 10)
-        x4.value[0]=np.round(x4.value[0], 10)
+        x0.value[0]=np.round(x0.value[0], 6)
+        x1.value[0]=np.round(x1.value[0], 6)
+        x2.value[0]=np.round(x2.value[0], 6)
+        x3.value[0]=np.round(x3.value[0], 6)
+        x4.value[0]=np.round(x4.value[0], 6)
         # x(0)==x0.value[0]
         # x(1)==x1.value[0]
         # x(2)==x2.value[0]
@@ -602,31 +659,31 @@ if c6==[0,0,0,0,0,0,0]:
         # x(4)==x4.value[0]
         scale = (quantity0**x0.value[0]*quantity1**x1.value[0]*quantity2**x2.value[0]*quantity3**x3.value[0]*quantity4**x4.value[0]*quantity5*quantity6)
         if c4==[0,0,0,0,0,0,0]:
-            x0.value[0]=np.round(x0.value[0], 10)
-            x1.value[0]=np.round(x1.value[0], 10)
-            x2.value[0]=np.round(x2.value[0], 10)
-            x3.value[0]=np.round(x3.value[0], 10)
+            x0.value[0]=np.round(x0.value[0], 6)
+            x1.value[0]=np.round(x1.value[0], 6)
+            x2.value[0]=np.round(x2.value[0], 6)
+            x3.value[0]=np.round(x3.value[0], 6)
             # x(0)==x0.value[0]
             # x(1)==x1.value[0]
             # x(2)==x2.value[0]
             # x(3)==x3.value[0]
             scale = (quantity0**x0.value[0]*quantity1**x1.value[0]*quantity2**x2.value[0]*quantity3**x3.value[0]*quantity4*quantity5*quantity6)
             if c3==[0,0,0,0,0,0,0]:
-                x0.value[0]=np.round(x0.value[0], 10)
-                x1.value[0]=np.round(x1.value[0], 10)
-                x2.value[0]=np.round(x2.value[0], 10)
+                x0.value[0]=np.round(x0.value[0], 6)
+                x1.value[0]=np.round(x1.value[0], 6)
+                x2.value[0]=np.round(x2.value[0], 6)
                 # x(0)==x0.value[0]
                 # x(1)==x1.value[0]
                 # x(2)==x2.value[0]
                 scale = (quantity0**x0.value[0]*quantity1**x1.value[0]*quantity2**x2.value[0]*quantity3*quantity4*quantity5*quantity6)
 else:
-    x0.value[0]=np.round(x0.value[0], 10)
-    x1.value[0]=np.round(x1.value[0], 10)
-    x2.value[0]=np.round(x2.value[0], 10)
-    x3.value[0]=np.round(x3.value[0], 10)
-    x4.value[0]=np.round(x4.value[0], 10)
-    x6.value[0]=np.round(x6.value[0], 10)
-    x5.value[0]=np.round(x5.value[0], 10)
+    x0.value[0]=np.round(x0.value[0], 6)
+    x1.value[0]=np.round(x1.value[0], 6)
+    x2.value[0]=np.round(x2.value[0], 6)
+    x3.value[0]=np.round(x3.value[0], 6)
+    x4.value[0]=np.round(x4.value[0], 6)
+    x6.value[0]=np.round(x6.value[0], 6)
+    x5.value[0]=np.round(x5.value[0], 6)
     # x(0)==x0.value[0]
     # x(1)==x1.value[0]
     # x(2)==x2.value[0]
@@ -719,3 +776,4 @@ if -0.5 in powermatrix:
 
 pprint(FinalThing)
 simplify(FinalThing)
+
